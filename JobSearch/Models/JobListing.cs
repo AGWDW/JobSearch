@@ -32,7 +32,7 @@ namespace JobSearch.Models
 
         [Required]
         [DataType(DataType.Currency)]
-        [Column(TypeName = "decimal(18, 2")]
+        [Column(TypeName = "decimal(18, 2)")]
         public double Salary { get; set; }
         // Navigation properites
         public IEnumerable<JobSeeker> Applied { get; set; }
