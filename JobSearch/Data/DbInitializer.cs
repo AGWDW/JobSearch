@@ -32,7 +32,7 @@ namespace JobSearch.Data
                 JobStartDate = DateTime.Today.AddMonths(1),
                 ListingStartDate = DateTime.Today,
                 ListingEndDate = DateTime.Today.AddMonths(1).AddDays(-7),
-                Salary = 40_000.00,
+                Salary = 40_000.00m,
                 Employer = bbc
             };
 
