@@ -5,7 +5,20 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Get a Job you Bumb</h1>
+    <form class="form-action no-color" method="get">
+        <div>
+            <p>
+                Job Search:
+                <input type="text" asp-for="SearchString"/>
+                <input type="submit" value="Search" class="btn btn-primary"/>
+            </p>
+        </div>
+    </form>
     <a asp-area="" asp-page="/JobSeekers/Index">JobSeekers</a>
+    @Html.DisplayFor(t => t.SearchString)
+    @Model.SearchString
+    <table class="table">
+
+    </table>
 </div>
