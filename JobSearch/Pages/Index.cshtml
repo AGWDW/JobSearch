@@ -16,9 +16,13 @@
         </div>
     </form>
     <a asp-area="" asp-page="/JobSeekers/Index">JobSeekers</a>
-    @Html.DisplayFor(t => t.SearchString)
     @Model.SearchString
-    <table class="table">
-
-    </table>
+    <div class="container" style="width: 50vw">
+        @foreach (var item in Model.JobListings)
+        {
+            <div class="mb-4">
+                @await Html.PartialAsync("/Pages/Shared/_JobListingPartial.cshtml", item)
+            </div>
+        }
+    </div>
 </div>

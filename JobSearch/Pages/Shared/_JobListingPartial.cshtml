@@ -1,3 +1,7 @@
-﻿@model JobSearch.Pages.Shared._JobListingPartialModel
-@{
-}
+﻿@model JobSearch.Models.JobListing
+
+<card class="card p-2">
+    <h5 class="card-title">@($"{Model.Name} | {Model.Salary:c} per year")</h5>
+    <p class="card-text">@Model.Description</p>
+    <a href="" class="btn btn-primary position-relative start-50 translate-middle-x" style="width: 10vw;">Apply</a>
+</card>

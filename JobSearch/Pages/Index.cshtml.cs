@@ -1,22 +1,28 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using JobSearch.Data;
+using JobSearch.Models;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace JobSearch.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly ILogger<IndexModel> _logger;
-        [BindProperty]
+        private readonly JobSearchContext _context;
         public string SearchString { get; set; }
+        public IList<JobListing> JobListings { get; set; }
 
-        public IndexModel(ILogger<IndexModel> logger)
+        public IndexModel(JobSearchContext context)
         {
-            _logger = logger;
+            _context = context;
         }
 
-        public void OnGet(string searchString)
+        public async Task OnGetAsync(string searchString)
         {
             SearchString = searchString;
+            if (_context.JobSeekers != null)
+            {
+                JobListings = await _context.JobListings.ToListAsync();
+            }
         }
     }
 }
