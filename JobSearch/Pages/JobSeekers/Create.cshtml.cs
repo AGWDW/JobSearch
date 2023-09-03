@@ -25,15 +25,19 @@ namespace JobSearch.Pages.JobSeekers
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
+            var emptyJobSeeker = new JobSeeker();
+
+            if (await TryUpdateModelAsync<JobSeeker>(
+                emptyJobSeeker,
+                "student",   // Prefix for form value.
+                s => s.FirstName, s => s.LastName))
             {
-                return Page();
+                _context.JobSeekers.Add(emptyJobSeeker);
+                await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
             }
 
-            _context.JobSeekers.Add(JobSeeker);
-            await _context.SaveChangesAsync();
-
-            return RedirectToPage("./Index");
+            return Page();
         }
     }
 }
