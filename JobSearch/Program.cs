@@ -34,7 +34,7 @@ namespace JobSearch
                 var services = scope.ServiceProvider;
 
                 var context = services.GetRequiredService<JobSearchContext>();
-                context.Database.EnsureCreated();
+                // context.Database.EnsureCreated();
                 DbInitializer.Initialize(context);
             }
 

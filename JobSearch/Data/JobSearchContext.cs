@@ -17,7 +17,7 @@ namespace JobSearch.Data
         {
             modelBuilder.Entity<JobSeeker>().ToTable("JobSeeker");
             modelBuilder.Entity<Employer>().ToTable("Employer");
-            modelBuilder.Entity<JobListing>().ToTable("JobListing");
+            modelBuilder.Entity<JobListing>().ToTable("JobListing").HasMany(d => d.Applied).WithMany(d => d.JobsApplyedFor);
         }
     }
 }

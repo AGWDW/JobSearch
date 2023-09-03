@@ -34,6 +34,7 @@ namespace JobSearch.Models
         [DataType(DataType.Currency)]
         [Column(TypeName = "decimal(18, 2)")]
         public double Salary { get; set; }
+
         // Navigation properites
         public IEnumerable<JobSeeker> Applied { get; set; }
         public Employer Employer { get; set; }
