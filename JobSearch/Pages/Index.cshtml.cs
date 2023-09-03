@@ -19,9 +19,14 @@ namespace JobSearch.Pages
         public async Task OnGetAsync(string searchString)
         {
             SearchString = searchString;
-            if (_context.JobSeekers != null)
+            if (string.IsNullOrWhiteSpace(SearchString))
             {
                 JobListings = await _context.JobListings.ToListAsync();
+            }
+            else
+            {
+                IQueryable<JobListing> lisings = from j in _context.JobListings select j;
+                JobListings = await lisings.Where(j => j.Name.ToLower().Contains(SearchString.ToLower())).AsNoTracking().ToListAsync();
             }
         }
     }
