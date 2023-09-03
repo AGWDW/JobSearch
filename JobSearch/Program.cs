@@ -1,5 +1,7 @@
+using JobSearch.Areas.Identity.Data;
 using JobSearch.Data;
 using Microsoft.EntityFrameworkCore;
+
 namespace JobSearch
 {
     public class Program
@@ -7,8 +9,13 @@ namespace JobSearch
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddDbContext<IdentityContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityContextConnection") ?? throw new InvalidOperationException("Connection string 'IdentityContextConnection' not found.")));
+
             builder.Services.AddDbContext<JobSearchContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("JobSearchContext") ?? throw new InvalidOperationException("Connection string 'JobSearchContext' not found.")));
+
+            builder.Services.AddDefaultIdentity<JobSearchUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<IdentityContext>();
 
             // Add services to the container.
             builder.Services.AddRazorPages();
