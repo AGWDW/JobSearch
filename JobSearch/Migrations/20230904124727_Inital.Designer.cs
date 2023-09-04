@@ -4,16 +4,19 @@ using JobSearch.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace JobSearch.Migrations.Identity
+namespace JobSearch.Migrations
 {
-    [DbContext(typeof(IdentityContext))]
-    partial class IdentityContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(JobSearchContext))]
+    [Migration("20230904124727_Inital")]
+    partial class Inital
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +24,21 @@ namespace JobSearch.Migrations.Identity
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("JobListingJobSeeker", b =>
+                {
+                    b.Property<int>("AppliedID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("JobsApplyedForID")
+                        .HasColumnType("int");
+
+                    b.HasKey("AppliedID", "JobsApplyedForID");
+
+                    b.HasIndex("JobsApplyedForID");
+
+                    b.ToTable("JobListingJobSeeker");
+                });
 
             modelBuilder.Entity("JobSearch.Areas.Identity.Data.JobSearchUser", b =>
                 {
@@ -40,6 +58,9 @@ namespace JobSearch.Migrations.Identity
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<int>("JobSeekerID")
+                        .HasColumnType("int");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -76,6 +97,8 @@ namespace JobSearch.Migrations.Identity
 
                     b.HasKey("Id");
 
+                    b.HasIndex("JobSeekerID");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -85,6 +108,81 @@ namespace JobSearch.Migrations.Identity
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("JobSearch.Models.Employer", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Employer", (string)null);
+                });
+
+            modelBuilder.Entity("JobSearch.Models.JobListing", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EmployerID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("JobStartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ListingEndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ListingStartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("Salary")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("EmployerID");
+
+                    b.ToTable("JobListing", (string)null);
+                });
+
+            modelBuilder.Entity("JobSearch.Models.JobSeeker", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("JobSeeker", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -224,6 +322,43 @@ namespace JobSearch.Migrations.Identity
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("JobListingJobSeeker", b =>
+                {
+                    b.HasOne("JobSearch.Models.JobSeeker", null)
+                        .WithMany()
+                        .HasForeignKey("AppliedID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("JobSearch.Models.JobListing", null)
+                        .WithMany()
+                        .HasForeignKey("JobsApplyedForID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("JobSearch.Areas.Identity.Data.JobSearchUser", b =>
+                {
+                    b.HasOne("JobSearch.Models.JobSeeker", "JobSeeker")
+                        .WithMany()
+                        .HasForeignKey("JobSeekerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("JobSeeker");
+                });
+
+            modelBuilder.Entity("JobSearch.Models.JobListing", b =>
+                {
+                    b.HasOne("JobSearch.Models.Employer", "Employer")
+                        .WithMany("JobListings")
+                        .HasForeignKey("EmployerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employer");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -273,6 +408,11 @@ namespace JobSearch.Migrations.Identity
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("JobSearch.Models.Employer", b =>
+                {
+                    b.Navigation("JobListings");
                 });
 #pragma warning restore 612, 618
         }

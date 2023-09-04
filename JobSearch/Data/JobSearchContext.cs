@@ -1,9 +1,11 @@
-﻿using JobSearch.Models;
+﻿using JobSearch.Areas.Identity.Data;
+using JobSearch.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace JobSearch.Data
 {
-    public class JobSearchContext : IdentityContext
+    public class JobSearchContext : IdentityDbContext<JobSearchUser>
     {
         public JobSearchContext(DbContextOptions<JobSearchContext> options)
             : base(options)
