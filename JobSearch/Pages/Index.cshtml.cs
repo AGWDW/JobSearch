@@ -1,5 +1,7 @@
-﻿using JobSearch.Data;
+﻿using JobSearch.Areas.Identity.Data;
+using JobSearch.Data;
 using JobSearch.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -9,12 +11,14 @@ namespace JobSearch.Pages
     public class IndexModel : PageModel
     {
         private readonly JobSearchContext _context;
+        private readonly UserManager<JobSearchUser> _usermanager;
         public string SearchString { get; set; }
         public IList<JobListing> JobListings { get; set; }
 
-        public IndexModel(JobSearchContext context)
+        public IndexModel(JobSearchContext context, UserManager<JobSearchUser> userManager)
         {
             _context = context;
+            _usermanager = userManager;
         }
 
         public async Task OnGetAsync(string searchString)
@@ -33,10 +37,15 @@ namespace JobSearch.Pages
 
         public async Task<IActionResult> OnPostAsync(int id)
         {
-            const int userID = 1;
+            JobSearchUser user = await _usermanager.GetUserAsync(User);
+            if (user == null)
+            {
+
+                return Redirect("/Identity/Account/Login");
+            }
 
             JobListing job = await _context.JobListings.Include(l => l.Applied).FirstOrDefaultAsync(j => j.ID == id);
-            JobSeeker me = await _context.JobSeekers.Include(j => j.JobsApplyedFor).FirstOrDefaultAsync(s => s.ID == userID);
+            JobSeeker me = await _context.JobSeekers.Include(j => j.JobsApplyedFor).FirstOrDefaultAsync(s => s.ID == user.JobSeekerID);
 
             var applications = (HashSet<JobListing>)me.JobsApplyedFor;
             var applicants = (HashSet<JobSeeker>)job.Applied;
