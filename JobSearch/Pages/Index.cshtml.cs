@@ -40,7 +40,6 @@ namespace JobSearch.Pages
             JobSearchUser user = await _usermanager.GetUserAsync(User);
             if (user == null)
             {
-
                 return Redirect("/Identity/Account/Login");
             }
 
@@ -58,6 +57,17 @@ namespace JobSearch.Pages
             }
 
             return RedirectToPage("./Index");
+        }
+        public async Task<bool> HasApplied(int listingID)
+        {
+            JobSearchUser user = await _usermanager.GetUserAsync(User);
+            if (user == null)
+            {
+                return false;
+            }
+            JobSeeker me = await _context.JobSeekers.Include(j => j.JobsApplyedFor).FirstOrDefaultAsync(s => s.ID == user.JobSeekerID);
+
+            return me.JobsApplyedFor.FirstOrDefault(x => x.ID == listingID) != default(JobListing);
         }
     }
 }

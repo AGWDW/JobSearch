@@ -19,8 +19,22 @@
     <div class="container" style="width: 50vw">
         @foreach (var item in Model.JobListings)
         {
+            @if (await Model.HasApplied(item.ID))
+            {
+                ViewData["AppliedValue"] = "Already Applied";
+            }
+            else
+            {
+                ViewData["AppliedValue"] = "Apply";
+            }
             <div class="mb-4">
-                @await Html.PartialAsync("/Pages/Shared/_JobListingPartial.cshtml", item)
+                <card class="card p-2">
+                            <h5 class="card-title">@($"{item.Name} | {item.Salary:c} per year")</h5>
+                        <p class="card-text">@item.Description</p>
+                        <form asp-page="./Index" method="post" asp-route-id="@item.ID">
+                            <input type="submit" class="btn btn-primary" style="width: 7vw;" value="@ViewData["AppliedValue"]"/>
+                    </form>
+                </card>
             </div>
         }
     </div>

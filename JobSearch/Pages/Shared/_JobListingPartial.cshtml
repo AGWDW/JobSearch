@@ -1,9 +1,0 @@
-﻿@model JobSearch.Models.JobListing
-
-<card class="card p-2">
-    <h5 class="card-title">@($"{Model.Name} | {Model.Salary:c} per year")</h5>
-    <p class="card-text">@Model.Description</p>
-    <form asp-page="./Index" method="post" asp-route-id="@Model.ID">
-        <input type="submit" class="btn btn-primary" style="width: 7vw;" value="Apply"/>
-    </form>
-</card>
