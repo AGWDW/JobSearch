@@ -17,7 +17,6 @@ namespace JobSearch.Data
                 new JobSeeker{FirstName="Isabelle", LastName="Ghosh"}
             };
             context.JobSeekers.AddRange(seekers);
-            context.SaveChanges();
 
 
 
@@ -36,12 +35,22 @@ namespace JobSearch.Data
                 Employer = bbc
             };
 
+            JobListing softwareDev2 = new JobListing
+            {
+                Name = "Java Developer",
+                JobStartDate = DateTime.Today.AddMonths(1),
+                ListingStartDate = DateTime.Today,
+                ListingEndDate = DateTime.Today.AddMonths(1).AddDays(-7),
+                Salary = 30_000.00m,
+                Employer = bbc
+            };
+
             // softwareDev.Employer = bbc;
 
             context.Employers.Add(bbc);
-            context.SaveChanges();
 
             context.JobListings.Add(softwareDev);
+            context.JobListings.Add(softwareDev2);
             context.SaveChanges();
         }
     }

@@ -1,9 +1,11 @@
-﻿using JobSearch.Models;
+﻿using JobSearch.Areas.Identity.Data;
+using JobSearch.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace JobSearch.Data
 {
-    public class JobSearchContext : DbContext
+    public class JobSearchContext : IdentityDbContext<JobSearchUser>
     {
         public JobSearchContext(DbContextOptions<JobSearchContext> options)
             : base(options)
@@ -18,6 +20,7 @@ namespace JobSearch.Data
             modelBuilder.Entity<JobSeeker>().ToTable("JobSeeker");
             modelBuilder.Entity<Employer>().ToTable("Employer");
             modelBuilder.Entity<JobListing>().ToTable("JobListing").HasMany(d => d.Applied).WithMany(d => d.JobsApplyedFor);
+            base.OnModelCreating(modelBuilder);
         }
     }
 }
