@@ -3,7 +3,10 @@
 #nullable disable
 
 using JobSearch.Areas.Identity.Data;
+using JobSearch.Data;
+using JobSearch.Models;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -15,28 +18,33 @@ using System.Text.Encodings.Web;
 
 namespace JobSearch.Areas.Identity.Pages.Account
 {
+    [AllowAnonymous]
     public class RegisterModel : PageModel
     {
         private readonly SignInManager<JobSearchUser> _signInManager;
         private readonly UserManager<JobSearchUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IUserStore<JobSearchUser> _userStore;
         private readonly IUserEmailStore<JobSearchUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly JobSearchContext _context;
 
         public RegisterModel(
             UserManager<JobSearchUser> userManager,
             IUserStore<JobSearchUser> userStore,
             SignInManager<JobSearchUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender, RoleManager<IdentityRole> roleManager, JobSearchContext contxt)
         {
             _userManager = userManager;
             _userStore = userStore;
+            _roleManager = roleManager;
             _emailStore = GetEmailStore();
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _context = contxt;
         }
 
         /// <summary>
@@ -91,6 +99,8 @@ namespace JobSearch.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+
+            public bool IsEmployer { get; set; }
         }
 
 
@@ -107,7 +117,25 @@ namespace JobSearch.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = CreateUser();
-                user.JobSeekerID = 1;
+
+                string roleName;
+                if (Input.IsEmployer)
+                {
+                    await CreateEmployer(user);
+                    roleName = "Employer";
+                }
+                else
+                {
+                    await CreateJobSeeker(user);
+                    roleName = "JobSeeker";
+                }
+
+                if (!await _roleManager.RoleExistsAsync(roleName))
+                {
+                    await _roleManager.CreateAsync(new IdentityRole(roleName));
+                }
+
+                await _userManager.AddToRoleAsync(user, roleName);
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
@@ -161,6 +189,35 @@ namespace JobSearch.Areas.Identity.Pages.Account
                     $"Ensure that '{nameof(JobSearchUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
                     $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
             }
+        }
+
+        private async Task CreateEmployer(JobSearchUser user)
+        {
+            Employer employer = new Employer
+            {
+                Name = "Test Employer",
+                UserID = user.Id
+            };
+            _context.Employers.Add(employer);
+            user.JobSeekerID = null;
+            await _context.SaveChangesAsync();
+
+            user.EmployerID = employer.ID;
+        }
+
+        private async Task CreateJobSeeker(JobSearchUser user)
+        {
+            JobSeeker seeker = new JobSeeker
+            {
+                FirstName = "Test",
+                LastName = "Human",
+                UserID = user.Id
+            };
+            _context.JobSeekers.Add(seeker);
+            user.EmployerID = null;
+            await _context.SaveChangesAsync();
+
+            user.JobSeekerID = seeker.ID;
         }
 
         private IUserEmailStore<JobSearchUser> GetEmailStore()

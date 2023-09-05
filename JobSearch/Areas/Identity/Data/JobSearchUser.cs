@@ -1,6 +1,5 @@
 ﻿using JobSearch.Models;
 using Microsoft.AspNetCore.Identity;
-using System.ComponentModel.DataAnnotations;
 
 namespace JobSearch.Areas.Identity.Data;
 
@@ -8,11 +7,14 @@ namespace JobSearch.Areas.Identity.Data;
 public class JobSearchUser : IdentityUser
 {
     [PersonalData]
-    [Required]
-    public int JobSeekerID { get; set; }
+    public int? JobSeekerID { get; set; }
+    [PersonalData]
+    public int? EmployerID { get; set; }
 
     // navigation property
     [PersonalData]
     public JobSeeker JobSeeker { get; set; }
+    [PersonalData]
+    public Employer Employer { get; set; }
 }
 

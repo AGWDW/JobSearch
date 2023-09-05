@@ -1,9 +1,11 @@
 ﻿using JobSearch.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace JobSearch.Pages.JobSeekers
 {
+    [Authorize(Roles = "JobSeeker")]
     public class IndexModel : PageModel
     {
         private readonly JobSearch.Data.JobSearchContext _context;
