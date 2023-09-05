@@ -1,6 +1,7 @@
 ﻿using JobSearch.Areas.Identity.Data;
 using JobSearch.Data;
 using JobSearch.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -8,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace JobSearch.Pages
 {
+    [AllowAnonymous]
     public class IndexModel : PageModel
     {
         private readonly JobSearchContext _context;
@@ -61,7 +63,7 @@ namespace JobSearch.Pages
         public async Task<bool> HasApplied(int listingID)
         {
             JobSearchUser user = await _usermanager.GetUserAsync(User);
-            if (user == null)
+            if (user == null || user.JobSeekerID is null)
             {
                 return false;
             }

@@ -1,0 +1,40 @@
+﻿@page
+
+@model JobSearch.Pages.EmployerDetailsModel
+@{
+    ViewData["Title"] = $"{Model.Employer.Name}'s Details";
+}
+
+@Html.Raw(Model.GetPropertyHTML("Model.Employer.Name"))
+
+<form asp-page-handler="Create" method="post">
+   <input type="submit" value="Add new Listing"/>
+   <input type="hidden" name="id" value="@Model.Employer.ID"/>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Listed</th>
+            <th scope="col">Name</th>
+            <th scope="col">Number of Applications</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.GetJobListings().Count == 0) 
+        {
+                <tr><td>No Job Listings found</td></tr>
+        }
+        else
+        {
+            foreach (var item in Model.Employer.JobListings)
+            {
+                <tr>
+                    <td>@item.ListingStartDate</td>
+                    <td>@item.Name</td>
+                    <td>@(((HashSet<JobSearch.Models.JobSeeker>)item.Applied).Count)</td>
+                </tr>   
+            }
+        }
+    </tbody>
+</table>
