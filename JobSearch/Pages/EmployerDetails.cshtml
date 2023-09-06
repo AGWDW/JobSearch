@@ -19,9 +19,9 @@
 <table class="table">
     <thead>
         <tr>
-            <th scope="col">Listed</th>
-            <th scope="col">Name</th>
-            <th scope="col">Number of Applications</th>
+            <th>Listed</th>
+            <th>Name</th>
+            <th>Number of Applications</th>
         </tr>
     </thead>
     <tbody>
@@ -34,8 +34,8 @@
             foreach (var item in Model.Employer.JobListings)
             {
                 <tr asp-validation-summary="ModelOnly">
-                    <td>@item.ListingStartDate</td>
-                    <td>@item.Name</td>
+                    <td>@Html.DisplayFor(x => item.ListingStartDate)</td>
+                    <td>@Html.DisplayFor(x => item.Name)</td>
                     <td>@(((HashSet<JobSearch.Models.JobSeeker>)item.Applied).Count)</td>
                     <td>
                         <a asp-page="./EditJobListing" asp-route-id="@item.ID">
