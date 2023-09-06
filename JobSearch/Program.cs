@@ -1,5 +1,7 @@
+using AutoMapper;
 using JobSearch.Areas.Identity.Data;
 using JobSearch.Data;
+using JobSearch.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -59,6 +61,14 @@ namespace JobSearch
             // Add services to the container.
             builder.Services.AddRazorPages();
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+            // Mapping Profile
+            var mapperConfig = new MapperConfiguration(c =>
+            {
+                c.AddProfile(new MappingProfiles());
+            });
+            IMapper mapper = mapperConfig.CreateMapper();
+            builder.Services.AddSingleton(mapper);
 
 
             var app = builder.Build();

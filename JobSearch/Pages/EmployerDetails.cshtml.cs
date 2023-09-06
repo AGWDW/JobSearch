@@ -15,6 +15,7 @@ namespace JobSearch.Pages
         private class EmployerDetailsInput
         {
         }
+        [BindProperty]
         public Employer Employer { get; set; }
         private readonly UserManager<JobSearchUser> _usermanager;
         private readonly JobSearchContext _context;
@@ -45,23 +46,28 @@ namespace JobSearch.Pages
             ((HashSet<JobListing>)employer.JobListings).Add(job);
             _context.JobListings.Add(job);
             _context.SaveChanges();
-            return Redirect(Request.Path);
-        }
-
-        public string GetPropertyHTML(string property)
-        {
-            string content =
-                $@"<form action=""post"">
-                    <label asp-for=""@{property}"">Name: </label>
-                    <input asp-for=""@{property}""/>
-                    <input type=""submit"" value=""Update""/>
-                </form>";
-            return content;
+            return RedirectToPage("EditJobListing", new { id = job.ID, creating = true });
         }
 
         public HashSet<JobListing> GetJobListings()
         {
             return (HashSet<JobListing>)Employer.JobListings;
+        }
+
+        public async Task<IActionResult> OnPostDeleteAsync(int? id)
+        {
+            if (id is null)
+            {
+                return NotFound();
+            }
+            var listing = await _context.JobListings.FindAsync(id);
+
+            if (listing != null)
+            {
+                _context.JobListings.Remove(listing);
+                await _context.SaveChangesAsync();
+            }
+            return Redirect(Request.Path);
         }
     }
 }

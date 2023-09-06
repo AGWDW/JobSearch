@@ -5,7 +5,11 @@
     ViewData["Title"] = $"{Model.Employer.Name}'s Details";
 }
 
-@Html.Raw(Model.GetPropertyHTML("Model.Employer.Name"))
+<form action=""post"">
+    <label asp-for="@Model.Employer.Name">Name: </label>
+    <input asp-for="@Model.Employer.Name"/>
+    <input type="submit" value="Update"/>
+</form>
 
 <form asp-page-handler="Create" method="post">
    <input type="submit" value="Add new Listing"/>
@@ -29,10 +33,21 @@
         {
             foreach (var item in Model.Employer.JobListings)
             {
-                <tr>
+                <tr asp-validation-summary="ModelOnly">
                     <td>@item.ListingStartDate</td>
                     <td>@item.Name</td>
                     <td>@(((HashSet<JobSearch.Models.JobSeeker>)item.Applied).Count)</td>
+                    <td>
+                        <a asp-page="./EditJobListing" asp-route-id="@item.ID">
+                            Edit
+                        </a>
+                    </td>
+                    <td>
+                        <form asp-page-handler="Delete" mwthod="post">
+                            <input type="submit" value="Delete"/>
+                            <input type="hidden" name="id" value="@item.ID"/>
+                        </form>
+                    </td>
                 </tr>   
             }
         }
